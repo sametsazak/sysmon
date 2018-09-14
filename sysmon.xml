@@ -1,0 +1,234 @@
+<Sysmon schemaversion="4.00">
+   <!-- Capture all hashes -->
+   <HashAlgorithms>*</HashAlgorithms>
+   <EventFiltering>
+      <!-- Event ID 1 == Process Creation. -->
+      <ProcessCreate onmatch="include">
+          <!-- Office related binaries -->
+          <ParentImage condition="contains">office</ParentImage>
+          <ParentImage condition="end with">WINWORD.exe</ParentImage>
+          <ParentImage condition="end with">EXCEL.exe</ParentImage>
+          <ParentImage condition="end with">POWERPNT.exe</ParentImage>
+          <ParentImage condition="end with">MSPUB.exe</ParentImage>
+          <ParentImage condition="end with">VISIO.exe</ParentImage>
+          <ParentImage condition="end with">mshta.exe</ParentImage>
+          
+          <ParentImage condition="end with">mmc.exe</ParentImage>
+          <ParentImage condition="end with">control.exe</ParentImage>
+          <ParentImage condition="end with">services.exe</ParentImage>
+          <ParentImage condition="end with">wmiprvse.exe</ParentImage>
+          <!-- Priviledge escalation tricks -->
+          <ParentImage condition="end with">eventvwr.exe</ParentImage>
+          <ParentImage condition="end with">fodhelper.exe</ParentImage>
+
+          <CommandLine condition="contains">wevutil cl</CommandLine>
+          <CommandLine condition="contains">/logfile= /LogToConsole=false /U</CommandLine>
+          <CommandLine condition="contains">/transfer</CommandLine>
+          <CommandLine condition="contains">dnscmd.exe /config /serverlevelplugindll</CommandLine>
+          <!-- Java with Remote Debugging -->
+          <CommandLine condition="contains">*transport=dt_socket,address=*</CommandLine>
+          <!-- Suspicious WMIC Commands -->
+          <CommandLine condition="contains">*/NODE:*process call create *</CommandLine>
+          <CommandLine condition="contains">* path AntiVirusProduct get *</CommandLine>
+          <CommandLine condition="contains">* path FirewallProduct get *</CommandLine>
+          <CommandLine condition="contains">* shadowcopy delete *</CommandLine>
+          <!-- VSADMIN Tricks ( Generally Ransomware Or Hacking Activitiy ) -->
+          <CommandLine condition="contains">vssadmin.exe Delete Shadows</CommandLine>
+          <CommandLine condition="contains">vssadmin create shadow /for=*:</CommandLine>
+          <CommandLine condition="contains">vssadmin delete shadows /for=*:</CommandLine>
+          <CommandLine condition="contains">copy \\?\GLOBALROOT\Device\*\windows\ntds\ntds.dit</CommandLine>
+          <CommandLine condition="contains">copy \\?\GLOBALROOT\Device\*\config\SAM</CommandLine>
+          <CommandLine condition="contains">reg SAVE HKLM\SYSTEM </CommandLine>
+          <!-- CMD tricks -->
+          <CommandLine condition="contains">cmd.exe /c *http://*%AppData%</CommandLine>
+          <CommandLine condition="contains">cmd.exe /c *https://*%AppData%</CommandLine>
+          <!-- Information Gathering About Domain & Local Users (If it matches so many false-possitive filtering can be done in Wazuh via net.exe or net1.exe)-->
+          <!-- <CommandLine condition="contains">net group "domain admins" /domain</CommandLine> -->
+          <!-- <CommandLine condition="contains">net localgroup administrators</CommandLine> -->
+          <CommandLine condition="contains">* group*</CommandLine>
+          <CommandLine condition="contains">* localgroup*</CommandLine>
+          <CommandLine condition="contains">* view*</CommandLine>
+          <CommandLine condition="contains">* share</CommandLine>
+          <CommandLine condition="contains">* account*</CommandLine>
+          <CommandLine condition="contains">* use*</CommandLine>
+          <!-- Certuilt tricks -->
+          <CommandLine condition="contains">*\certutil.exe * -decode *</CommandLine>
+          <CommandLine condition="contains">*\certutil.exe * -decodehex *</CommandLine>
+          <CommandLine condition="contains">*\certutil.exe *-urlcache* http*</CommandLine>
+          <CommandLine condition="contains">*\certutil.exe *-urlcache* ftp*</CommandLine>
+          <CommandLine condition="contains">*\certutil.exe *-URL*</CommandLine>
+          <CommandLine condition="contains">*\certutil.exe *-ping*</CommandLine>
+          <!-- Droppers (False Possitives exist) -->
+          <CommandLine condition="contains">* C:\Users\*.jse *</CommandLine>
+          <CommandLine condition="contains">* C:\Users\*.vbe *</CommandLine>
+          <CommandLine condition="contains">* C:\Users\*.js *</CommandLine>
+          <CommandLine condition="contains">* C:\Users\*.vba *</CommandLine>
+          <CommandLine condition="contains">* C:\Users\*.vbs *</CommandLine>
+          <CommandLine condition="contains">* C:\ProgramData\*.jse *</CommandLine>
+          <CommandLine condition="contains">* C:\ProgramData\*.vbe *</CommandLine>
+          <CommandLine condition="contains">* C:\ProgramData\*.js *</CommandLine>
+          <CommandLine condition="contains">* C:\ProgramData\*.vba *</CommandLine>
+          <CommandLine condition="contains">* C:\ProgramData\*.vbs *</CommandLine>
+          <!-- Powershell commandline tricks ( This continues and should be filter in Wazuh ) -->
+          <CommandLine condition="contains">*new-object system.net.webclient).downloadstring(*</CommandLine>
+          <CommandLine condition="contains">*new-object system.net.webclient).downloadfile(*</CommandLine>
+          <CommandLine condition="contains"> -enc </CommandLine>
+          <CommandLine condition="contains"> -EncodedCommand </CommandLine>
+          <CommandLine condition="contains"> -w hidden </CommandLine>
+          <CommandLine condition="contains"> -window hidden </CommandLine>
+          <CommandLine condition="contains"> -windowstyle hidden </CommandLine>
+          <CommandLine condition="contains"> -noni </CommandLine>
+          <CommandLine condition="contains"> -noninteractive </CommandLine>
+          <!-- Critical Binaries -->
+          <Image condition="is">C:\Windows\System\32\regsvr32.exe</Image>
+          <Image condition="is">C:\Windows\Microsoft.Net\Framework\v4.0.30319\MSBuild.exe</Image>
+          <Image condition="end with">InstallUtil.exe</Image>
+          <Image condition="end with">EQNEDT32.EXE</Image>
+          <Image condition="end with">wevutil</Image>
+          <Image condition="end with">bitsadmin.exe</Image>
+          <Image condition="end with">CasPol.exe</Image>
+          <Image condition="end with">IEExec.exe</Image>
+          <Image condition="end with">odbcconf.exe</Image>
+          <Image condition="end with">cscript.exe</Image>
+          <Image condition="end with">wscript.exe</Image>
+          <Image condition="end with">cmd.exe</Image>
+          <Image condition="end with">powershell.exe</Image>
+	  <Image condition="end with">certutil.exe</Image>
+          <Image condition="end with">sh.exe</Image>
+          <Image condition="end with">bash.exe</Image>
+          <Image condition="end with">scrcons.exe</Image>
+          <Image condition="end with">svchost.exe</Image>
+          <Image condition="end with">spoolsv.exe</Image>
+          <Image condition="end with">smss.exe</Image>
+          <Image condition="end with">csrss.exe</Image>
+          <Image condition="end with">conhost.exe</Image>
+          <Image condition="end with">regsvr32.exe</Image>       
+          <Image condition="end with">hh.exe</Image>
+          <Image condition="end with">wsmprovhost.exe</Image>
+          <Image condition="end with">regsvcs.exe</Image>
+          <Image condition="end with">regasm.exe</Image>
+          <Image condition="end with">sdbinst.exe</Image>
+          <Image condition="end with">schtasks.exe</Image>
+          <Image condition="end with">rundll32.exe</Image>
+          <Image condition="end with">net.exe</Image>
+          <Image condition="end with">net1.exe</Image>
+          <Image condition="end with">wmic.exe</Image>
+          <Image condition="end with">eventvwr.exe</Image>
+          <Image condition="end with">csc.exe</Image>
+          <!-- Very Suspicious Paths To Execute Binary From -->
+          <Image condition="contains">*\PerfLogs\*</Image>
+          <Image condition="contains">*\$Recycle.bin\*</Image>
+          <Image condition="contains">*\Intel\Logs\*</Image>
+          <Image condition="contains">*\Users\All Users\*</Image>
+          <Image condition="contains">*\Users\Default\*</Image>
+          <Image condition="contains">*\Users\Public\*</Image>
+          <Image condition="contains">*\Users\NetworkService\*</Image>
+          <Image condition="contains">*\Windows\Fonts\*</Image>
+          <Image condition="contains">*\Windows\Debug\*</Image>
+          <Image condition="contains">*\Windows\Media\*</Image>
+          <Image condition="contains">*\Windows\IME\*</Image>
+          <Image condition="contains">*\Windows\Help\*</Image>
+          <Image condition="contains">*\Windows\addins\*</Image>
+          <Image condition="contains">*\Windows\repair\*</Image>
+          <Image condition="contains">*\Windows\security\*</Image>
+          <Image condition="contains">*\RSA\MachineKeys\*</Image>
+          <Image condition="contains">*\wwwroot\*</Image>
+          <Image condition="contains">*\wmpub\*</Image>
+          <Image condition="contains">*\htdocs\*</Image>
+          <Image condition="contains">*\Windows\system32\config\systemprofile\*</Image>
+
+      </ProcessCreate>
+
+      <!-- Event ID 2 == File Creation Time. -->
+      <FileCreateTime onmatch="include"/>
+      <!-- Event ID 3 == Network Connection. -->
+      <NetworkConnect onmatch="include">
+          <!-- Very Suspicious Paths To Have Network Connection -->
+          <Image condition="contains">*\PerfLogs\*</Image>
+          <Image condition="contains">*\ProgramData\*</Image>
+          <Image condition="contains">*\$Recycle.bin\*</Image>
+          <Image condition="contains">*\Users\All Users\*</Image>
+          <Image condition="contains">*\Users\Default\*</Image>
+          <Image condition="contains">*\Users\Public\*</Image>
+          <Image condition="contains">*\Windows\Fonts\*</Image>
+          <Image condition="contains">*\Windows\Debug\*/</Image>
+          <Image condition="contains">*\Windows\Media\*</Image>
+          <Image condition="contains">*\Windows\IME\*</Image>
+          <Image condition="contains">*\Windows\Help\*</Image>
+          <Image condition="contains">*\Windows\addins\*</Image>
+          <Image condition="contains">*\Windows\system32\config\systemprofile\*</Image>
+          <!-- Non-common network connections and should be filtered thorugh the internal network in Wazuh -->
+          <Image condition="end with">rundll32.exe</Image>
+          <Image condition="end with">IEExec.exe</Image>
+          <Image condition="end with">powershell.exe</Image>
+      </NetworkConnect>
+      <!-- Event ID 5 == Process Terminated. -->
+      <ProcessTerminate onmatch="include"/>
+      <!-- Event ID 6 == Driver Loaded. -->
+      <!-- Event ID 7 == Image Loaded. -->
+      <!-- Event ID 8 == CreateRemoteThread. -->
+      <CreateRemoteThread onmatch="include">
+          <StartFunction condition="contains">LoadLibrary</StartFunction>
+          <TargetImage condition="is">C:\Windows\system32\lsass.exe</TargetImage>
+      </CreateRemoteThread>
+      <!-- Event ID 9 == RawAccessRead. -->
+      <RawAccessRead onmatch="include"/>
+      <!-- Event ID 10 == ProcessAccess. -->
+      <ProcessAccess onmatch="include">
+          <CallTrace condition="contains">CorperfmontExt.dll</CallTrace>
+          <TargetImage condition="is">C:\Windows\system32\lsass.exe</TargetImage>
+          <TargetImage condition="end with">verclsid.exe</TargetImage>
+      </ProcessAccess>
+      <!-- Event ID 11 == FileCreate. -->
+      <FileCreate onmatch="include">
+          <TargetFilename condition="contains">C:\Windows\AppPatch\Custom</TargetFilename>
+      </FileCreate>
+      <!-- Event ID 12,13,14 == RegObject added/deleted, RegValue Set, RegObject Renamed. -->
+      <RegistryEvent onmatch="include">
+          <Image condition="is">C:\Windows\system32\services.exe</Image>
+          <Image condition="is">C:\Windows\system32\LogonUI.exe</Image>
+          <Image condition="end with">IEExec.exe</Image>
+          <!-- <TargetObject condition="is">REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\DNS\Parameters\ServerLevelPluginDll</TargetObject> -->
+          <TargetObject condition="is">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Setup\ServiceStartup</TargetObject>
+          <TargetObject condition="is">HKLM\Software\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs</TargetObject>
+          <TargetObject condition="is">HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services</TargetObject>
+          <TargetObject condition="begin with">HKLM\SYSTEM\CurrentControlSet\Control\Print\Monitors\</TargetObject>
+          <TargetObject condition="begin with">HKLM\SYSTEM\CurrentControlSet\Control\Lsa\</TargetObject>
+          <!-- Autorun method and needs to be tuned -->
+          <TargetObject condition="contains">\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\*</TargetObject>
+          
+          <TargetObject condition="contains">\Services\DNS\Parameters\ServerLevelPluginDll</TargetObject>
+          <TargetObject condition="contains">\Services\DHCPServer\Parameters\CalloutDlls</TargetObject>
+          <TargetObject condition="contains">\Services\DHCPServer\Parameters\CalloutEnabled</TargetObject>
+          <TargetObject condition="contains">HKLM\System\CurrentControlSet\services\Tcpip\Parameters</TargetObject>
+          <TargetObject condition="contains">\services\Netlogon\Parameters\DisablePasswordChange</TargetObject>
+          <TargetObject condition="contains">\Control\SecurityProviders\WDigest</TargetObject>
+          <TargetObject condition="contains">\mscfile\shell\open\command\</TargetObject>
+          <TargetObject condition="contains">\Classes\exefile\shell\runas\command\isolatedCommand</TargetObject>
+          <TargetObject condition="contains">ms-settings\shell\open\command</TargetObject>
+          <TargetObject condition="contains">HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\InstalledSDB</TargetObject>
+          <TargetObject condition="is">Win32_OSRecoveryConfiguration</TargetObject>
+      </RegistryEvent>
+      <!-- Event ID 15 == FileStream Created. -->
+      <FileCreateStreamHash onmatch="include"/>
+      <!-- Event ID 17,18 == PipeEvent. Log Named pipe created & Named pipe connected -->
+      <PipeEvent onmatch="include">
+          <PipeName condition="contains">\isapi_http</PipeName>
+          <PipeName condition="contains">\isapi_dg</PipeName>
+          <PipeName condition="contains">\isapi_dg2</PipeName>
+          <PipeName condition="contains">\sdlrpc</PipeName>
+          <PipeName condition="contains">\ahexec</PipeName>
+          <PipeName condition="contains">\winsession</PipeName>
+          <PipeName condition="contains">\lsassw</PipeName>
+          <PipeName condition="contains">\46a676ab7f179e511e30dd2dc41bd388</PipeName>
+          <PipeName condition="contains">\9f81f59bc58452127884ce513865ed20</PipeName>
+          <PipeName condition="contains">\e710f28d59aa529d6792ca6ff0ca1b34</PipeName>
+          <PipeName condition="contains">\rpchlp_3</PipeName>
+          <PipeName condition="contains">\NamePipe_MoreWindows</PipeName>
+          <PipeName condition="contains">\pcheap_reuse</PipeName>
+          <PipeName condition="contains">\NamePipe_MoreWindows</PipeName>
+      </PipeEvent>
+      <!-- Event ID 19,20,21, == WmiEvent. Log all WmiEventFilter, WmiEventConsumer, WmiEventConsumerToFilter activity-->
+      <WmiEvent onmatch="include"/>
+  </EventFiltering>
+</Sysmon>
