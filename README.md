@@ -1,0 +1,2 @@
+# sysmon
+Sysmon wazuh rules
