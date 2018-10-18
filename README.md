@@ -27,7 +27,7 @@ Copy below to your client's ossec.conf file
 	
 Save it and restart agent.
 
-## Server Configuration
+## Server Configuration
 
 Copy sysmon_rules.xml to /var/ossec/etc/rules/local_rules.xml
 
