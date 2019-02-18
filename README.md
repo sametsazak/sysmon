@@ -24,7 +24,7 @@ Copy below to your client's ossec.conf file
 <location>Microsoft-Windows-Sysmon/Operational</location>
 <log_format>eventchannel</log_format>
 </localfile>
-	
+```
 Save it and restart agent.
 
 ## Server Configuration
