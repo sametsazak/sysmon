@@ -7,7 +7,7 @@ Sysmon is a command line tool which allows us to monitor and track processes tak
 # How to Install?
 
 ## Client Configuration
-
+```
 First, you should install Sysmon.
 
 Download sysmon : https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon
@@ -19,14 +19,12 @@ Sysmon64.exe -accepteula -i sysconfig.xml
 Then, 
 
 Copy below to your client's ossec.conf file
-`
 
 <localfile>
 <location>Microsoft-Windows-Sysmon/Operational</location>
 <log_format>eventchannel</log_format>
 </localfile>
 
-`
 Save it and restart agent.
 
 ## Server Configuration
