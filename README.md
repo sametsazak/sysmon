@@ -19,7 +19,7 @@ Sysmon64.exe -accepteula -i sysconfig.xml
 Then, 
 
 Copy below to your client's ossec.conf file
-
+`
 <localfile>
 <location>Microsoft-Windows-Sysmon/Operational</location>
 <log_format>eventchannel</log_format>
