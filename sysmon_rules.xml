@@ -384,4 +384,10 @@ updated by @nissy34
         <field name="win.eventdata.commandline">AppData</field>
         <description>Detects a suspicious command line execution that includes an URL and AppData</description>
     </rule>
+    
+    <rule id="255072" level="12">
+        <if_group>sysmon_event1</if_group>
+        <field name="win.eventdata.Image">\\mshta.exe</field>
+        <description>Sysmon - mshta.exe</description>
+    </rule>
 </group>
